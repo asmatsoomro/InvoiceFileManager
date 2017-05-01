@@ -14,49 +14,49 @@ import com.filehandler.entity.InvoiceFile;
 
 
 /**
- * DAO for CDRFILE. It stores or deletes data from CDR_FILE table in database
+ * DAO for InvoiceFile. 
  */
 public class FileHandlerDaoImpl implements IFileHandlerDao {
 
 	final static Logger logger = Logger.getLogger(FileHandlerDaoImpl.class);
 
-    private final String PERSISTENCE_UNIT_NAME = "ChargingDetailedRecord-FileHandler";
+	private final String PERSISTENCE_UNIT_NAME = "ChargingDetailedRecord-FileHandler";
 
-    private static EntityManagerFactory emf =  null;
-    private static EntityManager em = null;
+	private static EntityManagerFactory emf =  null;
+	private static EntityManager em = null;
 
 
-    public FileHandlerDaoImpl() {
-    	 emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-         em = emf.createEntityManager();
+	public FileHandlerDaoImpl() {
+		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		em = emf.createEntityManager();
 
-    }
+	}
 
-    /**
-     * Inserts the CDRFile into database table i.e. CDR_FILE
-     * @param cdrFileList
-     */
-	public void insertIntoDatabase(List<InvoiceFile> cdrFileList){
-        try {
-            em.getTransaction().begin();
+	/**
+	 * Inserts the InvoiceFile into database table
+	 * @param invoiceFileList
+	 */
+	public void insertIntoDatabase(List<InvoiceFile> invoiceFileList){
+		try {
+			em.getTransaction().begin();
 
-            for (int i = 0; i < cdrFileList.size(); i++) {
-                em.persist(cdrFileList.get(i));
-                logger.info("Persisted CDR in entityManager : " + cdrFileList.get(i).getFileName());
-            }
-            em.getTransaction().commit();
+			for (int i = 0; i < invoiceFileList.size(); i++) {
+				em.persist(invoiceFileList.get(i));
+				logger.info("Persisted Invoice attributes in entityManager : " + invoiceFileList.get(i).getFileName());
+			}
+			em.getTransaction().commit();
 
-        } catch (DatabaseException | PersistenceException ex){
-            logger.fatal("Could not connect to the database:: "+ ex);
-            em.getTransaction().rollback();
-            ex.printStackTrace();
+		} catch (DatabaseException | PersistenceException ex){
+			logger.fatal("Could not connect to the database:: "+ ex);
+			em.getTransaction().rollback();
+			ex.printStackTrace();
 
-           } finally {
-             em.close();
-             emf.close();
-        }
+		} finally {
+			em.close();
+			emf.close();
+			logger.info("Connection to the database closed.");
+		}
 
-		logger.info("Connection to the database closed.");
 
 	}
 

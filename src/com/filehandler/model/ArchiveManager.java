@@ -1,10 +1,5 @@
 package com.filehandler.model;
 
-import org.apache.log4j.Logger;
-
-import com.filehandler.entity.InvoiceFile;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,8 +9,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.filehandler.entity.InvoiceFile;
+
 /**
- * Created by ASoomro on 15.11.2016.
+ * Created by ASoomro
  */
 public class ArchiveManager {
 
@@ -37,28 +36,28 @@ public class ArchiveManager {
      * @return List of modified InvoiceFiles without duplicate files that already existed in the file system
      */
     public List<InvoiceFile> moveFileToArchiveAndRemoveDuplicatesFromList(List<InvoiceFile> invoiceFileList, String rootPath) {
-        invoiceFileList.forEach(cdrFile -> {
+        invoiceFileList.forEach(invoiceFile -> {
             {
-                Path sourcePath = Paths.get(cdrFile.getRelativePath());
-                Path destinationPath = getDestinationPath(cdrFile, false, rootPath);
+                Path sourcePath = Paths.get(invoiceFile.getRelativePath());
+                Path destinationPath = getDestinationPath(invoiceFile, false, rootPath);
                 try {
 
                     if (!Files.exists(destinationPath)) {
                         Files.createDirectories(destinationPath);
                         Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                        cdrFile.setRelativePath(getRelativePath());
+                        invoiceFile.setRelativePath(getRelativePath());
                         logger.info(sourcePath + " moved to "+destinationPath);
                        
                     }
                     else
                     {
-                        logger.info("Duplicate file found : "+cdrFile.getFileName());
-                        destinationPath = getDestinationPath(cdrFile, true, rootPath);
+                        logger.info("Duplicate file found : "+invoiceFile.getFileName());
+                        destinationPath = getDestinationPath(invoiceFile, true, rootPath);
                         Files.createDirectories(destinationPath);
                         Files.move(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                         logger.info(sourcePath + " moved to "+destinationPath);
                         //removes duplicate files from the list that will be used for DB inserts
-                        invoiceFileList.remove(cdrFile);
+                        invoiceFileList.remove(invoiceFile);
 
                     }
                 } catch (IOException ex) {
@@ -89,11 +88,11 @@ public class ArchiveManager {
 
 
     /**
-     * @param cdrFile
+     * @param invoiceFile
      * @param isDuplicate
      * @return The whole destination path where the archives will be moved to
      */
-    private Path getDestinationPath(InvoiceFile cdrFile, boolean isDuplicate, String rootPath){
+    private Path getDestinationPath(InvoiceFile invoiceFile, boolean isDuplicate, String rootPath){
 
         StringBuilder path = new StringBuilder(rootPath);
 
@@ -107,25 +106,25 @@ public class ArchiveManager {
             path.append(ARCHIVE_PATH_FOR_DUPLICATES);
             path.append(FOLDER_SEPERATOR);
         }
-        String folderDate = getFolderDate(cdrFile);
+        String folderDate = getFolderDate(invoiceFile);
         path.append(folderDate);
 
         path.append(FOLDER_SEPERATOR);
-        path.append(cdrFile.getClientCode());
+        path.append(invoiceFile.getClientCode());
         path.append(FOLDER_SEPERATOR);
 
         if (!isDuplicate) {
-            path.append(cdrFile.getFileName());
+            path.append(invoiceFile.getFileName());
         } else {
             //path.append(getDuplicateFileName(cdrFile.getFileName()));
-            path.append(cdrFile.getFileName());
+            path.append(invoiceFile.getFileName());
         }
 
 
         Path destinationPath = java.nio.file.FileSystems.getDefault()
                 .getPath(path.toString());
 
-        createRelativePath(folderDate, cdrFile.getClientCode());
+        createRelativePath(folderDate, invoiceFile.getClientCode());
 
         return destinationPath;
     }
@@ -166,15 +165,15 @@ public class ArchiveManager {
     /**
      *
      * @param folderDate
-     * @param providerCode
+     * @param clientCode
      * Creates the relative path for a file in archives
      */
-    private void createRelativePath(String folderDate, String providerCode){
+    private void createRelativePath(String folderDate, String clientCode){
 
         relativePath = new StringBuilder(FOLDER_SEPERATOR);
         relativePath.append(folderDate);
         relativePath.append(FOLDER_SEPERATOR);
-        relativePath.append(providerCode);
+        relativePath.append(clientCode);
         relativePath.append(FOLDER_SEPERATOR);
 
     }

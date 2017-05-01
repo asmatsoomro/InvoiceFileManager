@@ -48,10 +48,9 @@ public class InvoiceFile {
 
     /**
      *
-     * @param cdrFileId
-     * cdrFileId
+     * @param invoiceFileId
      */
-    public void setCdrFileId(Integer InvoiceFileId) {
+    public void setInvoiceFileId(Integer InvoiceFileId) {
         this.invoiceFileId = InvoiceFileId;
     }
 
@@ -218,9 +217,9 @@ public class InvoiceFile {
     }
 
     /**
-     * Gets the hash code of the current CDRFile object
+     * Gets the hash code of the current InvoiceFile object
      *
-     * @return hash code of the current CDRFile object
+     * @return hash code of the current InvoiceFile object
      */
     @Override
     public int hashCode() {
